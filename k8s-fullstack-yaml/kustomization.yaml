@@ -1,0 +1,8 @@
+secretGenerator:
+- name: mysql-pass
+  literals:
+  - password=test1234
+resources:
+- react-fe-deployment.yaml
+- nodejs-be-deployment.yaml
+- mysql-db-deployment.yaml

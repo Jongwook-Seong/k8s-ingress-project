@@ -1,0 +1,84 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: mysql
+  labels:
+    app: ingress-project
+spec:
+  ports:
+  - port: 3306
+  selector:
+    app: ingress-project
+    tier: database
+  type: NodePort
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mysql-deployment
+  labels:
+    app: ingress-project
+spec:
+  selector:
+    matchLabels:
+      app: ingress-project
+      tier: database
+  template:
+    metadata:
+      labels:
+        app: ingress-project
+        tier: database
+    spec:
+      containers:
+      - image: ypwa121/mysql-db:latest
+        name: mysql-db
+        env:
+        - name: MYSQL_ROOT_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: mysql-pass
+              key: password
+        - name: MYSQL_DATABASE
+          value: myapp
+        ports:
+        - containerPort: 3306
+          name: database
+        volumeMounts:
+        - name: mysql-persistent-storage
+          mountPath: /var/lib/mysql
+      volumes:
+      - name: mysql-persistent-storage
+        persistentVolumeClaim:
+          claimName: mysql-pv-claim
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mysql-pv-claim
+  labels:
+    app: ingress-project
+spec:
+  storageClassName: ""
+  volumeName: mysql-pv
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: mysql-pv
+  labels:
+    app: ingress-project
+spec:
+  capacity:
+    storage: 10Gi
+  accessModes:
+    - ReadWriteOnce
+    - ReadOnlyMany
+  persistentVolumeReclaimPolicy: Delete
+  hostPath:
+    path: /mysql/mysql_data
+    type : DirectoryOrCreate
