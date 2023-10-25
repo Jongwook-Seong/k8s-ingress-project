@@ -31,13 +31,13 @@ pipeline{
         stage('docker image build'){
             steps{
                 sh "docker build -t ${dockerHubRegistry}/frontend:${currentBuild.number} ./docker-fullstack-app/frontend"
-                sh "docker build -t ${dockerHubRegistry}/frontend:latest ./frontend"
+                sh "docker build -t ${dockerHubRegistry}/frontend:latest ./docker-fullstack-app/frontend"
 
-                sh "docker build -t ${dockerHubRegistry}/backend:${currentBuild.number} ./backend"
-                sh "docker build -t ${dockerHubRegistry}/backend:latest ./backend"
+                sh "docker build -t ${dockerHubRegistry}/backend:${currentBuild.number} ./docker-fullstack-app/backend"
+                sh "docker build -t ${dockerHubRegistry}/backend:latest ./docker-fullstack-app/backend"
 
-                sh "docker build -t ${dockerHubRegistry}/mysql:${currentBuild.number} ./mysql"
-                sh "docker build -t ${dockerHubRegistry}/mysql:latest ./mysql"
+                sh "docker build -t ${dockerHubRegistry}/mysql:${currentBuild.number} ./docker-fullstack-app/mysql"
+                sh "docker build -t ${dockerHubRegistry}/mysql:latest ./docker-fullstack-app/mysql"
             }
             post {
                     failure {
