@@ -96,7 +96,7 @@ pipeline{
                 {
                     git branch: "main",
                     credentialsId: githubCredential,
-                    url: 'https://github.com/moonstar0331/docker-fullstack-app-manifest.git'
+                    url: 'https://github.com/Jongwook-Seong/docker-fullstack-app-manifest.git'
 
                     sh "sed -i 's/frontend:.*\$/frontend:${currentBuild.number}/g' react-fe-deployment.yaml"
                     sh "sed -i 's/backend:.*\$/backend:${currentBuild.number}/g' nodejs-be-deployment.yaml"
