@@ -30,14 +30,14 @@ pipeline{
 
         stage('docker image build'){
             steps{
-                sh "docker build -t ${dockerHubRegistry}/frontend:${currentBuild.number} ./docker-fullstack-app/frontend"
-                sh "docker build -t ${dockerHubRegistry}/frontend:latest ./docker-fullstack-app/frontend"
+                sh "docker build -t ${dockerHubRegistry}/react-frontend:${currentBuild.number} ./docker-fullstack-app/frontend"
+                sh "docker build -t ${dockerHubRegistry}/react-frontend:latest ./docker-fullstack-app/frontend"
 
-                sh "docker build -t ${dockerHubRegistry}/backend:${currentBuild.number} ./docker-fullstack-app/backend"
-                sh "docker build -t ${dockerHubRegistry}/backend:latest ./docker-fullstack-app/backend"
+                sh "docker build -t ${dockerHubRegistry}/nodejs-backend:${currentBuild.number} ./docker-fullstack-app/backend"
+                sh "docker build -t ${dockerHubRegistry}/nodejs-backend:latest ./docker-fullstack-app/backend"
 
-                sh "docker build -t ${dockerHubRegistry}/mysql:${currentBuild.number} ./docker-fullstack-app/mysql"
-                sh "docker build -t ${dockerHubRegistry}/mysql:latest ./docker-fullstack-app/mysql"
+                sh "docker build -t ${dockerHubRegistry}/mysql-db:${currentBuild.number} ./docker-fullstack-app/mysql"
+                sh "docker build -t ${dockerHubRegistry}/mysql-db:latest ./docker-fullstack-app/mysql"
             }
             post {
                     failure {
@@ -51,14 +51,14 @@ pipeline{
         stage('Docker Image Push') {
             steps {
                 withDockerRegistry([ credentialsId: dockerHubRegistryCredential, url: "" ]) {
-                    sh "docker push ${dockerHubRegistry}/frontend:${currentBuild.number}"
-                    sh "docker push ${dockerHubRegistry}/frontend:latest"
+                    sh "docker push ${dockerHubRegistry}/react-frontend:${currentBuild.number}"
+                    sh "docker push ${dockerHubRegistry}/react-frontend:latest"
 
-                    sh "docker push ${dockerHubRegistry}/backend:${currentBuild.number}"
-                    sh "docker push ${dockerHubRegistry}/backend:latest"
+                    sh "docker push ${dockerHubRegistry}/nodejs-backend:${currentBuild.number}"
+                    sh "docker push ${dockerHubRegistry}/nodejs-backend:latest"
 
-                    sh "docker push ${dockerHubRegistry}/mysql:${currentBuild.number}"
-                    sh "docker push ${dockerHubRegistry}/mysql:latest"
+                    sh "docker push ${dockerHubRegistry}/mysql-db:${currentBuild.number}"
+                    sh "docker push ${dockerHubRegistry}/mysql-db:latest"
 
                     sleep 10 /* Wait uploading */
                 }
@@ -66,25 +66,25 @@ pipeline{
             post {
                     failure {
                       echo 'Docker Image Push failure !'
-                      sh "docker rmi ${dockerHubRegistry}/frontend:${currentBuild.number}"
-                      sh "docker rmi ${dockerHubRegistry}/frontend:latest"
+                      sh "docker rmi ${dockerHubRegistry}/react-frontend:${currentBuild.number}"
+                      sh "docker rmi ${dockerHubRegistry}/react-frontend:latest"
 
-                      sh "docker rmi ${dockerHubRegistry}/backend:${currentBuild.number}"
-                      sh "docker rmi ${dockerHubRegistry}/backend:latest"
+                      sh "docker rmi ${dockerHubRegistry}/nodejs-backend:${currentBuild.number}"
+                      sh "docker rmi ${dockerHubRegistry}/nodejs-backend:latest"
 
-                      sh "docker rmi ${dockerHubRegistry}/mysql:${currentBuild.number}"
-                      sh "docker rmi ${dockerHubRegistry}/mysql:latest"
+                      sh "docker rmi ${dockerHubRegistry}/mysql-db:${currentBuild.number}"
+                      sh "docker rmi ${dockerHubRegistry}/mysql-db:latest"
                     }
                     success {
                       echo 'Docker image push success !'
-                      sh "docker rmi ${dockerHubRegistry}/frontend:${currentBuild.number}"
-                      sh "docker rmi ${dockerHubRegistry}/frontend:latest"
+                      sh "docker rmi ${dockerHubRegistry}/react-frontend:${currentBuild.number}"
+                      sh "docker rmi ${dockerHubRegistry}/react-frontend:latest"
 
-                      sh "docker rmi ${dockerHubRegistry}/backend:${currentBuild.number}"
-                      sh "docker rmi ${dockerHubRegistry}/backend:latest"
+                      sh "docker rmi ${dockerHubRegistry}/nodejs-backend:${currentBuild.number}"
+                      sh "docker rmi ${dockerHubRegistry}/nodejs-backend:latest"
 
-                      sh "docker rmi ${dockerHubRegistry}/mysql:${currentBuild.number}"
-                      sh "docker rmi ${dockerHubRegistry}/mysql:latest"
+                      sh "docker rmi ${dockerHubRegistry}/mysql-db:${currentBuild.number}"
+                      sh "docker rmi ${dockerHubRegistry}/mysql-db:latest"
                     }
             }
         }
@@ -98,9 +98,9 @@ pipeline{
                     credentialsId: githubCredential,
                     url: 'https://github.com/Jongwook-Seong/docker-fullstack-app-manifest.git'
 
-                    sh "sed -i 's/frontend:.*\$/frontend:${currentBuild.number}/g' react-fe-deployment.yaml"
-                    sh "sed -i 's/backend:.*\$/backend:${currentBuild.number}/g' nodejs-be-deployment.yaml"
-                    sh "sed -i 's/mysql:.*\$/mysql:${currentBuild.number}/g' mysql-db-deployment.yaml"
+                    sh "sed -i 's/react-frontend:.*\$/react-frontend:${currentBuild.number}/g' react-fe-deployment.yaml"
+                    sh "sed -i 's/nodejs-backend:.*\$/nodejs-backend:${currentBuild.number}/g' nodejs-be-deployment.yaml"
+                    sh "sed -i 's/mysql-db:.*\$/mysql-db:${currentBuild.number}/g' mysql-db-deployment.yaml"
 
                     sh "git add ."
                     sh "git commit -m '[UPDATE] k8s ${currentBuild.number} image versioning'"
